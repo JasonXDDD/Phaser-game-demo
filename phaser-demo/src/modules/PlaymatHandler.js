@@ -1,10 +1,12 @@
 export class CardList {
   name = ''
   cards = []
+  defaultStatus = {}
 
-  constructor(cards, name = '') {
+  constructor(cards, name = '', defaultStatus = {}) {
     this.cards = cards
     this.name = name
+    this.defaultStatus = defaultStatus
   }
 
   // head (old) -> [0,1,2,3,4,5] <- tail (new)
@@ -48,6 +50,10 @@ export class CardList {
     this.cards.splice(index, 1)
   }
 
+  reset() {
+    this.cards = []
+  }
+
   setStatus(status, index) {
     if (index === undefined) {
       this.cards.forEach((card) => {
@@ -75,6 +81,12 @@ export class Playmat {
 
   where(pos) {
     return this.base[pos] || null
+  }
+
+  reset() {
+    Object.keys(this.base).forEach((key) => {
+      this.base[key].reset()
+    })
   }
 }
 

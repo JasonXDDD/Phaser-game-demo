@@ -1,48 +1,48 @@
-import { CardHandler, Card } from '../../modules/CardHandler'
-import { PlaymatHandler, Playmat } from '../../modules/PlaymatHandler'
+import { GameBoard } from '../../modules/GameBoard'
+import { ActionInterpreter } from '../../modules/ActionInterpreter'
 import { EventBus } from '../EventBus'
 import { Scene } from 'phaser'
 
 export class GameOver extends Scene {
-  card
   constructor() {
     super('GameOver')
   }
 
   create() {
-    this.cardSetting = new CardHandler({
-      name: '',
-      attack: 0,
-      defense: 0
+    this.gameBoard = new GameBoard({
+      cardFields: {
+        name: '',
+        attack: 0,
+        defense: 0
+      },
+      playmatFields: {
+        CL: [],
+        CC: [],
+        CR: [],
+        BL: [],
+        BR: [],
+        Stock: [],
+        Climax: [],
+        Level: [],
+        Clock: [],
+        Memory: [],
+        Waiting: []
+      },
+      decks: [
+        { name: 'Card 1', attack: 10, defense: 20 },
+        { name: 'Card 2', attack: 20, defense: 10 },
+        { name: 'Card 3', attack: 30, defense: 30 }
+      ],
+      phases: ['Stand', 'Draw', 'Clock', 'Main', 'Climax', 'Attack', 'End']
     })
 
-    this.cardDecks = [
-      new Card(this.cardSetting.getDefinition(), { name: 'Card 1', attack: 10, defense: 20 }),
-      new Card(this.cardSetting.getDefinition(), { name: 'Card 2', attack: 20, defense: 10 }),
-      new Card(this.cardSetting.getDefinition(), { name: 'Card 3', attack: 30, defense: 30 })
-    ]
+    console.log(this.gameBoard)
 
-    console.log(this.cardDecks)
-
-    this.playmatSetting = new PlaymatHandler({
-      CL: [],
-      CC: [],
-      CR: [],
-      BL: [],
-      BR: [],
-      Stock: [],
-      Climax: [],
-      Level: [],
-      Clock: [],
-      Memory: [],
-      Waiting: []
-    })
-    this.playmat = new Playmat(this.playmatSetting.getDefinition())
-
-    this.playmat.where('CL').addCards(this.cardDecks)
-
-    this.playmat.where('CL').setStatus('back')
-    console.log(this.playmat)
+    this.interpreter = new ActionInterpreter()
+    this.interpreter.input('if(%=:Reverse)P(C!@):Rest:Rest:Rest:Back;_>[Deck,Deck$,Waiting]')
+    let a = this.interpreter.input(
+      'P4(Deck^4)>StandBy;x=f(G.StandBy={type=Climax});StandBy>Waiting;Px(Deck)>Hand'
+    )
 
     // Phaser
     this.cameras.main.setBackgroundColor(0xff0000)
