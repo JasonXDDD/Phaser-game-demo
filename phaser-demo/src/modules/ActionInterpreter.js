@@ -1,6 +1,13 @@
 export class ActionInterpreter {
   origin = ''
 
+  syntax = [
+    { format: 'A', function: 'pick' },
+    { format: 'A^n', function: 'pickTopN' },
+    { format: 'A$n', function: 'pickBottomN' },
+    { format: 'P(A)', function: 'pick1' }
+  ]
+
   input(text) {
     this.origin = text
 
